@@ -1,4 +1,6 @@
 
+
+
 enum StepType{
     NUM_STEPS,
     STEP_HEIGHT
@@ -65,6 +67,161 @@ function buildMesh(scene: BABYLON.Scene, verts: number[][], faces: number[][], u
     vertexData.applyToMesh(customMesh);
 
     return customMesh;
+}
+
+//function createStairsCurved(scene: BABYLON.Scene, height: number = 2, stepWidth: number = 1, stepType: StepType = StepType.NUM_STEPS, numSteps: number = 6, userStepHeight: number = .5, curvature: number = 60, innerRadius: number = 3, ccw: boolean = false, sides: boolean = true): BABYLON.Mesh
+
+function createStairs(scene: BABYLON.Scene, width: number = 1, height: number = 2, depth: number = 2, stepType: StepType = StepType.NUM_STEPS, numSteps: number = 6, userStepHeight: number = .5, sides: boolean = true): BABYLON.Mesh
+{
+    var verts = [];
+    var faces = [];
+    var uvs = [];
+
+    width /= 2;
+
+    //Setup calculations
+    var stepHeight: number;
+    if (stepType == StepType.NUM_STEPS)
+    {
+        stepHeight = height / numSteps;
+    }
+    else
+    {
+        stepHeight = userStepHeight;
+        numSteps = Math.max(Math.floor(height / userStepHeight), 1);
+        height = stepHeight * numSteps;
+    }
+
+    var stepDepth = depth / numSteps;
+
+    var f = 0;
+    var uvyOffset = 0;
+
+
+    //Draw steps
+    for (var i = 0; i < numSteps; ++i)
+    {
+        verts.push([-width, i * stepHeight, i * stepDepth]);
+        verts.push([width, i * stepHeight, i * stepDepth]);
+        verts.push([-width, (i + 1) * stepHeight, i * stepDepth]);
+        verts.push([width, (i + 1) * stepHeight, i * stepDepth]);
+
+        if (i != 0)
+        {
+            faces.push([f + 0, f + 1, f - 1, f - 2]);
+            uvs.push([
+                [-width, uvyOffset + stepDepth],
+                [-width, uvyOffset],
+                [width, uvyOffset],
+                [width, uvyOffset + stepDepth],
+            ]);
+            uvyOffset += stepDepth;
+        }
+
+        faces.push([f + 0, f + 2, f + 3, f + 1]);
+        uvs.push([
+            [-width, uvyOffset],
+            [width, uvyOffset],
+            [width, uvyOffset + stepHeight],
+            [-width, uvyOffset + stepHeight],
+        ]);
+
+        uvyOffset += stepHeight;
+        f += 4;
+    }
+
+    //Top of last step
+    verts.push([-width, height, depth])
+    verts.push([width, height, depth])
+    faces.push([f + 0, f + 1, f - 1, f - 2])
+    uvs.push([
+        [-width, uvyOffset + stepDepth],
+        [-width, uvyOffset],
+        [width, uvyOffset],
+        [width, uvyOffset + stepDepth],
+    ]);
+    
+    if (sides)
+    {
+        verts.push([-width, 0, depth])
+        verts.push([width, 0, depth])
+        
+        faces.push([f + 0, f + 2, f + 3, f + 1])
+        uvs.push([
+            [-width, height],
+            [width, height],
+            [width, 0],
+            [-width, 0]
+        ])
+
+        
+        faces.push([0, 1, f + 3, f + 2])
+        uvs.push([
+            [-width, depth],
+            [-width, 0],
+            [width, 0],
+            [width, depth],
+        ])
+
+        //Side triangles
+        for (var i = 0; i < numSteps; ++i)
+        {
+            var x = verts[i * 4 + 5][0]
+            faces.push([i * 4 + 0, i * 4 + 4, i * 4 + 2])
+            faces.push([i * 4 + 1, i * 4 + 3, i * 4 + 5])
+            uvs.push([
+                [verts[i * 4 + 0][0], verts[i * 4 + 0][2]],
+                [verts[i * 4 + 4][0], verts[i * 4 + 4][2]],
+                [verts[i * 4 + 2][0], verts[i * 4 + 2][2]],
+            ])
+            uvs.push([
+                [verts[i * 4 + 1][0], verts[i * 4 + 1][2]],
+                [verts[i * 4 + 3][0], verts[i * 4 + 3][2]],
+                [verts[i * 4 + 5][0], verts[i * 4 + 5][2]],
+            ])
+        }
+        
+        // faces.push([0, (numSteps + 1) * 4, (numSteps + 1) * 4 + 2])
+        // faces.push([1, (numSteps + 1) * 4 + 1, (numSteps + 1) * 4 + 3])
+        faces.push([0, f + 2, f + 0])
+        faces.push([1, f + 1, f + 3])
+        uvs.push([
+            [verts[0][0], verts[0][2]],
+            [verts[f + 0][0], verts[f + 0][2]],
+            [verts[f + 2][0], verts[f + 2][2]],
+        ])
+        uvs.push([
+            [verts[1][0], verts[1][2]],
+            [verts[f + 1][0], verts[f + 1][2]],
+            [verts[f + 3][0], verts[f + 3][2]],
+        ])
+
+      
+        // var leftFace: number[] = []
+        // var rightFace: number[] = []
+        // var leftFaceUvs: number[][] = []
+        // var rightFaceUvs: number[][] = []
+        // for (var i = 0; i < numSteps * 2 + 2; ++i)
+        // {
+            // var idx = i * 2
+            // leftFace.push(idx)
+            // leftFaceUvs.push([verts[idx][0], verts[idx][2]])
+            
+            // idx = i * 2 + 1
+            
+            // rightFace.unshift(idx)
+            // rightFaceUvs.unshift([verts[idx][0], verts[idx][2]])
+        // }
+        
+        // faces.push(leftFace)
+        // faces.push(rightFace)
+        // uvs.push(leftFaceUvs)
+        // uvs.push(rightFaceUvs)
+        
+    }
+    
+
+    return buildMesh(scene, verts, faces, uvs);
 }
 
 
@@ -263,6 +420,22 @@ function createStairsCurved(scene: BABYLON.Scene, height: number = 2, stepWidth:
 }
 
 
+// function createStairs(scene: BABYLON.Scene, width: number = 1, height: number = 2, depth: number = 2, stepType: StepType = StepType.NUM_STEPS, numSteps: number = 6, userStepHeight: number = .5, sides: boolean = true): BABYLON.Mesh
+// {
+    // return createStairsCurved(scene, 
+        // height, 
+        // width, 
+        // stepType, 
+        // numSteps,
+        // userStepHeight, 
+        // 0, 
+        // 1,
+        // false,
+        // sides);
+// }
+
+
+
 class Playground {
     public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
         // This creates a basic Babylon Scene object (non-mesh)
@@ -270,6 +443,9 @@ class Playground {
 
         // This creates and positions a free camera (non-mesh)
         var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+//        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-10, 5, 0), scene);
+//        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, 10), scene);
+//        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, -5, 10), scene);
 
         // This targets the camera to scene origin
         camera.setTarget(BABYLON.Vector3.Zero());
@@ -290,7 +466,10 @@ class Playground {
         //sphere.position.y = 1;
 
         var stairsCurved: BABYLON.Mesh = createStairsCurved(scene);
-        stairsCurved.position.x += 2;
+        stairsCurved.position.x += 1;
+
+        var stairs: BABYLON.Mesh = createStairs(scene);
+        stairs.position.x -= 1;
 
         // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
         var ground = BABYLON.Mesh.CreateGround("ground1", 6, 6, 2, scene);
@@ -298,4 +477,3 @@ class Playground {
         return scene;
     }
 }
-
