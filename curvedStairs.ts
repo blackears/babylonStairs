@@ -68,7 +68,7 @@ function buildMesh(scene: BABYLON.Scene, verts: number[][], faces: number[][], u
 }
 
 
-function createStairs(scene: BABYLON.Scene, height: number = 2, stepWidth: number = 1, stepType: StepType = StepType.NUM_STEPS, numSteps: number = 6, userStepHeight: number = .5, curvature: number = 60, innerRadius: number = 3, ccw: boolean = false, sides: boolean = true): BABYLON.Mesh
+function createStairsCurved(scene: BABYLON.Scene, height: number = 2, stepWidth: number = 1, stepType: StepType = StepType.NUM_STEPS, numSteps: number = 6, userStepHeight: number = .5, curvature: number = 60, innerRadius: number = 3, ccw: boolean = false, sides: boolean = true): BABYLON.Mesh
 {
     const toRadians = Math.PI / 180;
 
@@ -258,7 +258,6 @@ function createStairs(scene: BABYLON.Scene, height: number = 2, stepWidth: numbe
         [1, 0],
         [0, 0]
     ])
-    
 
     return buildMesh(scene, verts, faces, uvs);
 }
@@ -290,7 +289,8 @@ class Playground {
         // Move the sphere upward 1/2 its height
         //sphere.position.y = 1;
 
-        createStairs(scene);
+        var stairsCurved: BABYLON.Mesh = createStairsCurved(scene);
+        stairsCurved.position.x += 2;
 
         // Our built-in 'ground' shape. Params: name, width, depth, subdivs, scene
         var ground = BABYLON.Mesh.CreateGround("ground1", 6, 6, 2, scene);
