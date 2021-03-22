@@ -1,4 +1,19 @@
-
+/*
+ * Copyright 2021 Stairs Generator (https://www.kitfox.com)
+ * Copyright 2021 Mark McKay
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 
 enum StepType{
@@ -69,7 +84,6 @@ function buildMesh(scene: BABYLON.Scene, verts: number[][], faces: number[][], u
     return customMesh;
 }
 
-//function createStairsCurved(scene: BABYLON.Scene, height: number = 2, stepWidth: number = 1, stepType: StepType = StepType.NUM_STEPS, numSteps: number = 6, userStepHeight: number = .5, curvature: number = 60, innerRadius: number = 3, ccw: boolean = false, sides: boolean = true): BABYLON.Mesh
 
 function createStairs(scene: BABYLON.Scene, width: number = 1, height: number = 2, depth: number = 2, stepType: StepType = StepType.NUM_STEPS, numSteps: number = 6, userStepHeight: number = .5, sides: boolean = true): BABYLON.Mesh
 {
@@ -195,28 +209,6 @@ function createStairs(scene: BABYLON.Scene, width: number = 1, height: number = 
             [verts[f + 1][0], verts[f + 1][2]],
             [verts[f + 3][0], verts[f + 3][2]],
         ])
-
-      
-        // var leftFace: number[] = []
-        // var rightFace: number[] = []
-        // var leftFaceUvs: number[][] = []
-        // var rightFaceUvs: number[][] = []
-        // for (var i = 0; i < numSteps * 2 + 2; ++i)
-        // {
-            // var idx = i * 2
-            // leftFace.push(idx)
-            // leftFaceUvs.push([verts[idx][0], verts[idx][2]])
-            
-            // idx = i * 2 + 1
-            
-            // rightFace.unshift(idx)
-            // rightFaceUvs.unshift([verts[idx][0], verts[idx][2]])
-        // }
-        
-        // faces.push(leftFace)
-        // faces.push(rightFace)
-        // uvs.push(leftFaceUvs)
-        // uvs.push(rightFaceUvs)
         
     }
     
@@ -420,21 +412,6 @@ function createStairsCurved(scene: BABYLON.Scene, height: number = 2, stepWidth:
 }
 
 
-// function createStairs(scene: BABYLON.Scene, width: number = 1, height: number = 2, depth: number = 2, stepType: StepType = StepType.NUM_STEPS, numSteps: number = 6, userStepHeight: number = .5, sides: boolean = true): BABYLON.Mesh
-// {
-    // return createStairsCurved(scene, 
-        // height, 
-        // width, 
-        // stepType, 
-        // numSteps,
-        // userStepHeight, 
-        // 0, 
-        // 1,
-        // false,
-        // sides);
-// }
-
-
 
 class Playground {
     public static CreateScene(engine: BABYLON.Engine, canvas: HTMLCanvasElement): BABYLON.Scene {
@@ -443,9 +420,6 @@ class Playground {
 
         // This creates and positions a free camera (non-mesh)
         var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
-//        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(-10, 5, 0), scene);
-//        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, 10), scene);
-//        var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, -5, 10), scene);
 
         // This targets the camera to scene origin
         camera.setTarget(BABYLON.Vector3.Zero());
